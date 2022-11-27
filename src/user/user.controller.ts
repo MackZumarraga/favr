@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  UseGuards,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
 import { GetUser } from '../auth/decorator';
 import { JwtGuard } from '../auth/guard';
@@ -13,6 +21,16 @@ export class UserController {
   @Get('me')
   getMe(@GetUser() user: User) {
     return user;
+  }
+
+  @Get()
+  getUsers() {
+    return this.userService.getUsers();
+  }
+
+  @Get(':id')
+  getUserById(@Param('id', ParseIntPipe) userId: number) {
+    return this.userService.getUserById(userId);
   }
 
   @Patch()

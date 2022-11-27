@@ -74,7 +74,8 @@ describe('App e2e', () => {
           .spec()
           .post('/auth/signup')
           .withBody(signUpDto)
-          .expectStatus(201);
+          .expectStatus(201)
+          .stores('userId', 'userId');
       });
     });
 
@@ -127,9 +128,32 @@ describe('App e2e', () => {
       });
     });
 
-    // describe('Get users', () => {});
+    describe('Get users', () => {
+      it('should get existing users', async () => {
+        return pactum
+          .spec()
+          .get('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAccessToken}',
+          })
+          .expectStatus(200)
+          .expectJsonLength(1);
+      });
+    });
 
-    // describe('Get user by id', () => {});
+    describe('Get user by id', () => {
+      it('should get user by UserId', async () => {
+        return pactum
+          .spec()
+          .get('/users/{id}')
+          .withPathParams('id', '$S{userId}')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAccessToken}',
+          })
+          .expectStatus(200)
+          .expectBodyContains('$S{userId}');
+      });
+    });
 
     describe('Edit user', () => {
       it('should edit user', async () => {
@@ -149,8 +173,6 @@ describe('App e2e', () => {
           .expectBodyContains(dto.email);
       });
     });
-
-    // describe('Delete user', () => {});
   });
 
   describe('Item', () => {
